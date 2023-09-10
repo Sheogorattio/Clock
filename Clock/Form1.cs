@@ -68,8 +68,7 @@ namespace Clock
         {
             g.Clear(BackColor);
 
-
-            #region Отрисовка основы
+            #region Printing base
             g.FillRectangle(Brushes.RosyBrown, -_origin.X, -_origin.Y, _origin.X * 2, _origin.Y * 2);
             g.FillEllipse(Brushes.LightGray, -radius, -radius, radius * 2, radius * 2);
             pen.Color = Color.Black;
@@ -87,6 +86,13 @@ namespace Clock
             DateTime time = DateTime.Now;
             this.Text = $"{time.Hour:D2}:{time.Minute:D2}:{time.Second:D2}";
 
+            #region Printing hour hand
+            pen.Color = Color.Black;
+            pen.Width = 8;
+            g.DrawLine(pen, 0, 0, HourWatchPoints[time.Hour*5+time.Minute/12].X, HourWatchPoints[time.Hour*5+time.Minute / 12].Y);
+
+            #endregion
+
             #region Printing minute hand
             pen.Color = Color.Black;
             pen.Width = 6;
@@ -100,8 +106,7 @@ namespace Clock
             g.DrawLine(pen, 0,0, SecWatchPoints[time.Second].X, SecWatchPoints[time.Second].Y);
             #endregion
 
-           
-
+            g.FillEllipse(Brushes.LightSlateGray, -12, -12, 24, 24);
 
             pictureBox1.Refresh();
         }
