@@ -13,18 +13,20 @@ namespace Clock
 {
     public partial class Form1 : Form
     {
-        Matrix matrix;
+        Matrix matrix, text_m;
         Point _origin;
 
         Pen pen = new Pen(Color.Black, 10);
         Bitmap bm;
-        Graphics g;
+        Graphics g, text_g;
         Timer timer;
         double[] radAngles = new double[60];
         PointF[] SecWatchPoints = new PointF[60];
-        PointF[] HourWatchPoints = new PointF[60];
+        PointF[] HourWatchPoints = new PointF[120];
 
         int radius = 300;
+
+        Font textFont;
         public Form1()
         {
             InitializeComponent();
@@ -36,15 +38,25 @@ namespace Clock
             matrix.Translate(_origin.X, _origin.Y);
             matrix.Scale(1, -1);
 
+            text_m = new Matrix();
+            text_m.Translate(_origin.X, _origin.Y);
+            text_m.Scale(1, 1);
+
             bm = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             g = Graphics.FromImage(pictureBox1.Image = bm); 
             g.Transform = matrix;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            text_g = Graphics.FromImage(pictureBox1.Image);
+            text_g.Transform = text_m;
             g.SmoothingMode = SmoothingMode.AntiAlias;
             
 
             timer = new Timer();
             timer.Interval = 1000;
             timer.Tick += Timer_Tick;
+
+            textFont = new Font("Digital-7", 25, FontStyle.Bold);
 
             for(int i=0; i < 60; i++)
             {
@@ -59,6 +71,8 @@ namespace Clock
                 SecWatchPoints[i].Y = (float)Math.Sin(radAngles[i]) * (radius-20);
                 HourWatchPoints[i].X = (float)Math.Cos(radAngles[i]) * (radius - 80);
                 HourWatchPoints[i].Y = (float)Math.Sin(radAngles[i]) * (radius - 80);
+                HourWatchPoints[i + 60].X = (float)Math.Cos(radAngles[i]) * (radius - 80);
+                HourWatchPoints[i + 60].Y = (float)Math.Sin(radAngles[i]) * (radius - 80);
             }
 
             timer.Start();
@@ -107,6 +121,9 @@ namespace Clock
             #endregion
 
             g.FillEllipse(Brushes.LightSlateGray, -12, -12, 24, 24);
+
+
+            text_g.DrawString($"{time.Hour:D2}:{time.Minute:D2}:{time.Second:D2}", textFont, Brushes.BurlyWood, -65,-radius-60 );
 
             pictureBox1.Refresh();
         }
